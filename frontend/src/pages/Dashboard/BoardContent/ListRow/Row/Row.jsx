@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, Stack } from "@mui/material";
 import { ArrowForwardIos } from "@mui/icons-material";
-import { mockData } from "../../../../../apis/mockdata";
 import Book from "../../../../../components/Book/Book";
 import * as BookService from "../../../../../services/BookService";
 
 function Row({ item }) {
-  const [books, setBooks] = useState(mockData?.books);
-  const [product, setProducts] = useState([]);
-
+  const [books, setBooks] = useState([]);
 
   const fetchAllBook = async () => {
     const res = await BookService.getAllBook();
@@ -19,7 +16,7 @@ function Row({ item }) {
   useEffect(() => {
     fetchAllBook();
   }, []);
-  //console.log(product);
+
   return (
     <Box mt={2}>
       {books.length > 0 && (

@@ -11,13 +11,12 @@ let play = false;
 
 function PlayMusic() {
   const [isPlaying, setIsPlaying] = useState(false);
-  //const audioRef = new Audio("src/assets/audio/book1.mp3");
+
   const location = useLocation();
   const musicInfo = location.state?.musicInfo;
   console.log("musicInfo", musicInfo);
   const audioSrc = "src/assets/music/" + musicInfo.link;
 
-  //const audioRef = useRef(new Audio(audioSrc));
   const audioRef = useRef();
 
   window.musiccurrent = audioRef;
@@ -26,8 +25,7 @@ function PlayMusic() {
 
   const handleBeforeOut = async (event) => {
     musicInfo.time = audioRef.current.currentTime;
-    // chapter.Time_Chuong = 0;
-    //console.log("chapter.Time_Chuong", chapter.Time_Chuong);
+
     console.log("currentTime", audioRef.current.currentTime);
     console.log("musicinfo", musicInfo);
     audioRef.current.pause();
@@ -58,8 +56,8 @@ function PlayMusic() {
       audioRef.current.play();
     }
     if (event.key === "f") {
-      console.log("set time");
-      audioRef.current.currentTime = 100;
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
     }
     if (event.key === "g") {
       console.log(audioRef.current.currentTime);
@@ -69,52 +67,114 @@ function PlayMusic() {
     }
   };
 
-  // useEffect(() => {
-  //   if (play === false) {
-  //     window.scrollTo(0, 0);
-  //     respond("Bạn muốn phát nhạc tiếp hay phát lại từ đầu");
-  //     play = true;
-  //     console.log("kiểm tra", play);
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (musicInfo) {
+      if (audioRef.current) {
+        audioRef.current.addEventListener("loadedmetadata", () => {
+          if (
+            musicInfo.time > 0 &&
+            musicInfo.time < audioRef.current.duration
+          ) {
+            audioRef.current.currentTime = musicInfo.time;
+          } else {
+            audioRef.current.currentTime = 0;
+          }
+        });
+      }
+      console.log("set lúc đầu");
+    }
+  }, [musicInfo]);
 
-  // useEffect(() => {
-  //   if (recognizedText.toLocaleLowerCase().includes("phát tiếp tục")) {
-  //     audioRef.current.addEventListener("loadedmetadata", () => {
-  //       if (musicInfo.time > 0 && musicInfo.time < audioRef.current.duration) {
-  //         audioRef.current.currentTime = musicInfo.time;
-  //       } else {
-  //         audioRef.current.currentTime = 0;
-  //       }
-  //       audioRef.current.play();
-  //     });
-  //   }
-  //   if (recognizedText.toLocaleLowerCase().includes("phát từ đầu")) {
-  //     audioRef.current.addEventListener("loadedmetadata", () => {
-  //       audioRef.current.currentTime = 0;
-  //       audioRef.current.play();
-  //     });
-  //   }
-  //   if (recognizedText.toLocaleLowerCase().includes("dừng")) {
-  //     console.log("dừng");
-  //     if (!audioRef.current.paused) {
-  //       console.log(audioRef.current.paused);
-  //       audioRef.current.pause();
-  //       //console.log(audio.paused);
-  //     }
-  //   }
-  //   if (recognizedText.toLocaleLowerCase().includes("tiếp tục")) {
-  //     audioRef.current.play();
-  //   }
-  //   if (recognizedText.toLocaleLowerCase().includes("tăng âm lượng phát ")) {
-  //     utterance.volume = 2;
-  //     respond("Âm lượng đã được tăng");
-  //   }
-  //   if (recognizedText.toLocaleLowerCase().includes("giảm âm lượng phát")) {
-  //     utterance.volume = 0.5;
-  //     respond("Âm lượng đã được giảm");
-  //   }
-  // }, [recognizedText]);
+  useEffect(() => {
+    if (play === false) {
+      window.scrollTo(0, 0);
+      respond("Bạn muốn phát tiếp hay phát lại từ đầu");
+      play = true;
+      console.log("kiểm tra", play);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (recognizedText.toLocaleLowerCase().includes("phát tiếp tục")) {
+      if (audioRef.current) {
+        audioRef.current.addEventListener("loadedmetadata", () => {
+          if (
+            musicInfo.time > 0 &&
+            musicInfo.time < audioRef.current.duration
+          ) {
+            audioRef.current.currentTime = musicInfo.time;
+          } else {
+            audioRef.current.currentTime = 0;
+          }
+          audioRef.current.play();
+        });
+      }
+    }
+    if (recognizedText.toLocaleLowerCase().includes("phát từ đầu")) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+    }
+    if (recognizedText.toLocaleLowerCase().includes("dừng")) {
+      console.log("dung doc");
+      // pauseAudio();
+      if (!audioRef.current.paused) {
+        console.log(audioRef.current.paused);
+        audioRef.current.pause();
+        //console.log(audio.paused);
+      }
+    }
+    if (recognizedText.toLocaleLowerCase().includes("tiếp tục")) {
+      console.log("tiếp tục");
+      audioRef.current.play();
+    }
+    if (recognizedText.toLocaleLowerCase().includes("tăng âm thanh")) {
+      volumeR = 1;
+      console.log("tăng âm lượng", volumeR);
+
+      speechSynthesis.cancel();
+      respond("Âm thanh đã được tăng");
+    }
+    if (recognizedText.toLocaleLowerCase().includes("giảm âm thanh")) {
+      volumeR = 0.2;
+      console.log("giảm âm lượng", volumeR);
+
+      speechSynthesis.cancel();
+      respond("Âm thanh đã được giảm");
+    }
+    if (recognizedText.toLocaleLowerCase().includes("chương tiếp")) {
+      let number = getNumberFromString(chapterInfo.name);
+      let nextChapter = bookInfo.chapter[number];
+      console.log("nextchap", nextChapter);
+      console.log("number", number);
+      if (number < bookInfo.chapter.length) {
+        navigate(`/read-book?${nextChapter?._id}`, {
+          state: {
+            bookInfo: bookInfo,
+            chapterInfo: bookInfo.chapter[number],
+          },
+        });
+      } else {
+        respond("Không có chương sau");
+      }
+    }
+    if (recognizedText.toLocaleLowerCase().includes("chương trước")) {
+      let number = getNumberFromString(chapterInfo.name);
+      let previousChapter = bookInfo.chapter[number - 2];
+      console.log("previousChapter", previousChapter);
+      console.log("number", number);
+      if (number - 2 >= 0) {
+        console.log("in readbook");
+        navigate(`/read-book?${previousChapter?._id}`, {
+          state: {
+            bookInfo: bookInfo,
+            chapterInfo: bookInfo.chapter[number - 2],
+          },
+        });
+      } else {
+        respond("Không có chương trước");
+      }
+    }
+  }, [recognizedText]);
 
   const CheckTimeAudio = () => {
     if (audioRef.current) {
@@ -130,18 +190,11 @@ function PlayMusic() {
   };
 
   useEffect(() => {
-    //audio.play();
     if (audioRef.current) {
       audioRef.current.volume = 0.5;
     }
-    CheckTimeAudio();
-    //respond(text);
-    //tts(text);
-    //window.addEventListener("hashchange", handleBeforeOut);
-    //window.onhashchange = TestFunction();
-    // window.navigation.addEventListener("navigate", (event) => {
-    //   console.log("location changed!");
-    // });
+    //CheckTimeAudio();
+
     window.navigation.addEventListener("navigate", handleBeforeOut);
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("beforeunload", handleBeforeOut);
@@ -150,13 +203,6 @@ function PlayMusic() {
       window.removeEventListener("beforeunload", handleBeforeOut);
       window.navigation.removeEventListener("navigate", handleBeforeOut);
     };
-    //window.onbeforeunload = handleBeforeOut;
-    // return () => {
-    //   window.removeEventListener("beforeunload", handleBeforeOut);
-    // };
-    // return () => {
-    //   window.removeEventListener("keydown", handleKeyDown);
-    // };
   }, []);
 
   return (

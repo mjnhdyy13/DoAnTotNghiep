@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { mockData } from "../../apis/mockdata";
 import { Link, useNavigate } from "react-router-dom";
 import * as BookService from "../../services/BookService";
 import * as MusicService from "../../services/MusicService";
-import * as googleTTS from "google-tts-api";
 import { useDispatch } from "react-redux";
 import { setRecognizedText } from "../../redux/slice/speechSlice";
-//import * as talkify from "talkify-tts";
 
 let bookdata = [];
 let readbook = null;
@@ -14,6 +11,7 @@ let musicdata = [];
 let playmusic = null;
 let recog_data = null;
 let speechUtterance = null;
+let vole = 0.5;
 
 const SpeechRecognitionComponent = () => {
   const [texts, setTexts] = useState([]);
@@ -21,7 +19,7 @@ const SpeechRecognitionComponent = () => {
   const [p, setP] = useState(document.createElement("p"));
   const navigate = useNavigate();
   const [volume, setVolume] = useState(0.5);
-  var vole = 0.5;
+  //var vole = 0.5;
   const [books, setBooks] = useState([]);
   const [songs, setSongs] = useState([]);
   const dispatch = useDispatch();
@@ -107,39 +105,7 @@ const SpeechRecognitionComponent = () => {
 
     const handleKeyDown = (event) => {
       if (event.key === "d") {
-        // console.log("dung doc");
         speechSynthesis.cancel();
-        // stopReading();
-        //console.log(window.audiocurrent);
-        // talkify.config.remoteService.host = "https://talkify.net";
-        // talkify.config.remoteService.apiKey =
-        //   "d0b2bc47-a39a-4911-b864-d18579eb34f0";
-        // talkify.config.ui.audioControls.enabled = true; //<-- Disable to get the browser built in audio controls
-        // talkify.config.ui.audioControls.voicepicker.enabled = true;
-        // talkify.config.ui.audioControls.container =
-        //   document.getElementById("player-and-voices");
-        // var player = new talkify.TtsPlayer(); //or new talkify.Html5Player()
-        // player.playText("Hello world");
-      }
-
-      if (event.key === "g") {
-        handleVolume(1);
-        //respond("");
-      }
-      if (event.key === "q") {
-        respond("Xin chào bạn");
-
-        // Thiết lập sự điều chỉnh kích thước cho cửa sổ
-        // let widthAdjustment = 100; // Điều chỉnh chiều rộng (trong pixels)
-        // let heightAdjustment = 100; // Điều chỉnh chiều cao (trong pixels)
-
-        // Thay đổi kích thước của cửa sổ hiện tại
-        //window.resizeBy(widthAdjustment, heightAdjustment);
-        //window.blur();
-        // window.minimize();
-      }
-      if (event.key === "f") {
-        setTexts("đọc chương 2");
       }
     };
 
@@ -293,7 +259,6 @@ const SpeechRecognitionComponent = () => {
         } else {
           respond("Bạn chưa chọn sách để đọc");
         }
-        //respond(bookContent);
       }
 
       if (text.toLowerCase().includes("tăng âm lượng")) {
@@ -314,7 +279,6 @@ const SpeechRecognitionComponent = () => {
         respond("Âm lượng đã được tăng lên.");
       }
       if (text.toLowerCase().includes("dừng" || "tắt" || "ngừng")) {
-        //console.log(window.audiocurrent);
         speechSynthesis.cancel();
         if (window.musiccurrent) {
           window.musiccurrent.current.pause();
@@ -343,40 +307,6 @@ const SpeechRecognitionComponent = () => {
         respond("Đã về trang chủ");
       }
 
-      if (text.includes("Đọc tin tức")) {
-        window.open("https://www.24h.com.vn/", "_blank");
-        fetch("https://www.24h.com.vn/")
-          .then((response) => response.text())
-          .then((html) => {
-            // Phân tích HTML để trích xuất tiêu đề
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, "text/html");
-
-            // Lấy tất cả các tiêu đề trong thẻ h1 và h2
-            const headings = doc.querySelectorAll("h3");
-
-            // In ra tiêu đề của mỗi tin tức
-            let count = 0;
-            headings.forEach((heading) => {
-              if (count < 5) {
-                console.log(heading.textContent.trim());
-                respond(heading.textContent.trim());
-                count++;
-              } else {
-                return; // Đã in ra 5 dòng, thoát khỏi vòng lặp
-              }
-            });
-          })
-          .catch((error) => console.error("Fetch error:", error));
-
-        //respond("Đã mở trang tin tức");
-      }
-      if (text.includes("thoát chương trình")) {
-        respond("Chương trình sẽ thoát trong một vài giây.");
-        setTimeout(() => {
-          window.close(); // Đóng trang web
-        }, 2000); // Đợi 2 giây trước khi đóng
-      }
       setP(document.createElement("p"));
     }
   };
@@ -387,35 +317,16 @@ const SpeechRecognitionComponent = () => {
     reply.volume = vole;
     console.log(vole);
     speechSynthesis.speak(reply);
-    // const newP = document.createElement("p");
-    // newP.classList.add("replay");
-    // newP.innerText = "My Name is Cifar";
-    // setTexts([...texts, newP]);
   };
-
-  // return <div className="texts"></div>;
 };
 
 export default SpeechRecognitionComponent;
-// export const respond = (answer) => {
-//   const reply = new SpeechSynthesisUtterance(answer);
-//   reply.lang = "vi-VN";
-//   reply.rate = 1.5;
-//   //reply.volume = vole;
-//   //console.log(vole);
-//   console.log("in respond", answer);
 
-//   speechSynthesis.speak(reply);
-//   // const newP = document.createElement("p");
-//   // newP.classList.add("replay");
-//   // newP.innerText = "My Name is Cifar";
-//   // setTexts([...texts, newP]);
-// };
 export const respond = (answer) => {
   return new Promise((resolve) => {
     const reply = new SpeechSynthesisUtterance(answer);
     reply.lang = "vi-VN";
-
+    reply.volume = vole;
     reply.rate = 1;
     console.log("in respond", answer);
     reply.onend = resolve; // Gọi resolve khi việc đọc hoàn tất

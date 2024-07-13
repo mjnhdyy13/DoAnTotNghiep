@@ -13,8 +13,6 @@ import {
 import BookIcon from "@mui/icons-material/Book";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import reviewApi from "../../apis/reviewApi";
-import { mockData } from "../../apis/mockdata";
 import * as BookService from "../../services/BookService";
 import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -105,8 +103,6 @@ function BookDetail() {
       console.log("booD", bookD);
       const description_book = `Cuốn sách ${bookD?.name} thuộc thể loại ${bookD?.book_category?.name}. Trạng thái hoàn thành và nguồn từ sưu tập. Tác giả là `;
       const description_author = bookD?.author?.name;
-      //console.log("des", description_book);
-      //respond(description_book);
       resVn(description_book);
       resEn(description_author);
       play = true;
@@ -130,7 +126,7 @@ function BookDetail() {
             console.log("chap");
             respond(chap.name);
             found = true;
-            navigate("/read-book", {
+            navigate(`/read-book?${chap?._id}`, {
               state: { bookInfo: book, chapterInfo: chap },
             });
           }
@@ -286,7 +282,7 @@ function BookDetail() {
                       state: { bookInfo: book, chapterInfo: chap },
                     }}
                     onClick={() =>
-                      navigate("/read-book", {
+                      navigate(`/read-book?${chap?._id}`, {
                         state: { bookInfo: book, chapterInfo: chap },
                       })
                     }

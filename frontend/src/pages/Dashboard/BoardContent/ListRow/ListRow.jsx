@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { mockData } from "../../../../apis/mockdata";
+
 import Row from "./Row/Row";
 import RowMusic from "./Row/RowMusic";
 

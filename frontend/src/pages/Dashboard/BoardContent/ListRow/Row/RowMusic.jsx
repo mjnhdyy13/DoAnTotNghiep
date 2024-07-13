@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, Stack } from "@mui/material";
 import { ArrowForwardIos } from "@mui/icons-material";
-import { mockData } from "../../../../../apis/mockdata";
+
 import Music from "../../../../../components/Music/Music";
 import * as MusicService from "../../../../../services/MusicService";
 
 function RowMusic({ item }) {
   const [songs, setSongs] = useState([]);
-  const [product, setProducts] = useState([]);
 
   const fetchAllMusic = async () => {
     const res = await MusicService.getAllMusic();

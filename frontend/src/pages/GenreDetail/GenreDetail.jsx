@@ -11,14 +11,10 @@ import {
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Book from "../../components/Book/Book";
-import { mockData } from "../../apis/mockdata";
 
 function GenreDetail() {
   const categoryId = useSelector((state) => state.category.id);
-  const [books, setBooks] = useState(mockData?.books);
-  const [booksBySelect, setBooksBySelect] = useState([]);
-  const [authors, setAuthors] = useState(mockData?.authors);
-  const [checked, setChecked] = useState([]);
+  const [books, setBooks] = useState([]);
   const [select, setSelect] = useState(1);
   const handleSelect = (event) => {
     setSelect(event.target.value);

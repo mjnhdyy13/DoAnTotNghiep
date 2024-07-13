@@ -13,8 +13,6 @@ import {
   Divider,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import reviewApi from "../../apis/reviewApi";
-import { mockData } from "../../apis/mockdata";
 import { respond } from "../../components/SpeechRecognition/re";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -25,20 +23,41 @@ import "../../css/highlight.css";
 
 let play = false;
 let utterance = null;
+let volumeR = 0.5;
 
 function ReadBook(props) {
+  const findChapterById = (bookObject, chapterId) => {
+    // Lặp qua mảng 'Chuong'
+    for (let i = 0; i < bookObject.chapter.length; i++) {
+      console.log("lap", bookObject.chapter[i]);
+      // So sánh ID của chương với chapterId cần tìm
+      if (bookObject.chapter[i]._id === chapterId) {
+        // Nếu tìm thấy, trả về đối tượng chương
+        return bookObject.chapter[i];
+      }
+    }
+    // Nếu không tìm thấy, trả về null hoặc thông báo lỗi tùy ý
+    return null;
+  };
+
   const navigate = useNavigate();
 
   let recognizedText = useSelector((state) => state.speech.recognizedText);
   // Truy cập thông tin của chương từ props
   const location = useLocation();
 
-  const chapterInfo = location.state?.chapterInfo;
+  //const chapterInfo = location.state?.chapterInfo;
   const bookInfo = location.state?.bookInfo;
+  const chapterInfo = findChapterById(
+    bookInfo,
+    window.location.search.substring(1)
+  );
+
   console.log("chuong o readbook", chapterInfo);
   console.log("bookInfo o readbook", bookInfo);
 
   const [text, setText] = useState(chapterInfo?.content);
+  const [page, setPage] = useState(false);
 
   //Biến cho phần highlight
   const [highlightIndex, setHighlightIndex] = useState(chapterInfo?.time);
@@ -58,6 +77,12 @@ function ReadBook(props) {
       console.log("set lúc đầu");
     }
   }, [chapterInfo]);
+
+  // useEffect(() => {
+  //   if (page === true) {
+  //     window.location.reload();
+  //   }
+  // }, [page]);
 
   // Hàm bắt đầu highlight
   const startHighlight = () => {
@@ -125,20 +150,6 @@ function ReadBook(props) {
     }
   };
 
-  const findChapterById = (bookObject, chapterId) => {
-    // Lặp qua mảng 'Chuong'
-    for (let i = 0; i < bookObject.chapter.length; i++) {
-      console.log("lap", bookObject.chapter[i]);
-      // So sánh ID của chương với chapterId cần tìm
-      if (bookObject.chapter[i]._id === chapterId) {
-        // Nếu tìm thấy, trả về đối tượng chương
-        return bookObject.chapter[i];
-      }
-    }
-    // Nếu không tìm thấy, trả về null hoặc thông báo lỗi tùy ý
-    return null;
-  };
-
   const handleKeyDown = (event) => {
     if (event.key === "x") {
       console.log("dung doc");
@@ -151,7 +162,10 @@ function ReadBook(props) {
     }
 
     if (event.key === "h") {
-      handleBeforeOut();
+      // handleBeforeOut();
+      chapterInfo.time = 0;
+      setHighlightIndex(0);
+      startHighlight();
     }
     if (event.key === "Enter") {
       //test
@@ -206,7 +220,7 @@ function ReadBook(props) {
       startHighlight();
     }
     if (recognizedText.toLocaleLowerCase().includes("dừng")) {
-      console.log("dừng");
+      console.log("dung doc");
       stopHighlight();
       speechSynthesis.pause();
     }
@@ -215,41 +229,55 @@ function ReadBook(props) {
       startHighlight();
       speechSynthesis.resume();
     }
-    if (recognizedText.toLocaleLowerCase().includes("tăng âm lượng đọc ")) {
-      utterance.volume = 2;
-      respond("Âm lượng đã được tăng");
-    }
-    if (recognizedText.toLocaleLowerCase().includes("giảm âm lượng đọc")) {
-      utterance.volume = 0.5;
-      respond("Âm lượng đã được giảm");
-    }
-    // if (recognizedText.toLocaleLowerCase().includes("chương tiếp")) {
-    //   let number = getNumberFromString(chapterInfo.name);
-    //   if (number + 1 <= bookInfo.chapter.length) {
-    //     navigate("/read-book", {
-    //       state: {
-    //         bookInfo: bookInfo,
-    //         chapterInfo: bookInfo.chapter[number + 1],
-    //       },
-    //     });
-    //   } else {
-    //     respond("Không có chương sau");
-    //   }
-    // }
-    // if (recognizedText.toLocaleLowerCase().includes("chương trước")) {
-    //   let number = getNumberFromString(chapterInfo.name);
+    if (recognizedText.toLocaleLowerCase().includes("tăng âm thanh")) {
+      volumeR = 1;
+      console.log("tăng âm lượng", volumeR);
 
-    //   if (number - 1 >= 0) {
-    //     navigate("/read-book", {
-    //       state: {
-    //         bookInfo: bookInfo,
-    //         chapterInfo: bookInfo.chapter[number - 1],
-    //       },
-    //     });
-    //   } else {
-    //     respond("Không có chương trước");
-    //   }
-    // }
+      speechSynthesis.cancel();
+      respond("Âm thanh đã được tăng");
+    }
+    if (recognizedText.toLocaleLowerCase().includes("giảm âm thanh")) {
+      volumeR = 0.2;
+      console.log("giảm âm lượng", volumeR);
+
+      speechSynthesis.cancel();
+      respond("Âm thanh đã được giảm");
+    }
+    if (recognizedText.toLocaleLowerCase().includes("chương tiếp")) {
+      let number = getNumberFromString(chapterInfo.name);
+      let nextChapter = bookInfo.chapter[number];
+      console.log("nextchap", nextChapter);
+      console.log("number", number);
+      if (number < bookInfo.chapter.length) {
+        play = false;
+        navigate(`/read-book?${nextChapter?._id}`, {
+          state: {
+            bookInfo: bookInfo,
+            chapterInfo: bookInfo.chapter[number],
+          },
+        });
+      } else {
+        respond("Không có chương sau");
+      }
+    }
+    if (recognizedText.toLocaleLowerCase().includes("chương trước")) {
+      let number = getNumberFromString(chapterInfo.name);
+      let previousChapter = bookInfo.chapter[number - 2];
+      console.log("previousChapter", previousChapter);
+      console.log("number", number);
+      if (number - 2 >= 0) {
+        play = false;
+        console.log("in readbook");
+        navigate(`/read-book?${previousChapter?._id}`, {
+          state: {
+            bookInfo: bookInfo,
+            chapterInfo: bookInfo.chapter[number - 2],
+          },
+        });
+      } else {
+        respond("Không có chương trước");
+      }
+    }
   }, [recognizedText]);
 
   // useEffect sử dụng đọc cả bài
@@ -273,6 +301,8 @@ function ReadBook(props) {
 
       //const utterance = new SpeechSynthesisUtterance(textRead);
       utterance = new SpeechSynthesisUtterance(textRead);
+      console.log("âm lượng", volumeR);
+      utterance.volume = volumeR;
       utterance.onboundary = (event) => {
         if (event.name === "word") {
           setTimeout(() => {

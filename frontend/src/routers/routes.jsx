@@ -1,7 +1,7 @@
 import DashBoard from "../pages/Dashboard/Dashboard";
 import Login from "../pages/Auth/Login/Login";
 import Register from "../pages/Auth/Register/Register";
-import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
+
 import Promotion from "../pages/Promotion/Promotion";
 import GenreDetail from "../pages/GenreDetail/GenreDetail";
 import NotFound from "../pages/NotFound/NotFound";
@@ -18,7 +18,6 @@ import MusicDetail from "../pages/MusicDetail/MusicDetail";
 const publicRoutes = [
   { path: "/login", component: Login, layout: AuthLayout },
   { path: "/register", component: Register, layout: AuthLayout },
-  { path: "/reset-password", component: ResetPassword, layout: AuthLayout },
   { path: "/", component: DashBoard },
   { path: "/promotion", component: Promotion },
   { path: "/genre-detail", component: GenreDetail },

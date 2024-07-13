@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, Stack } from "@mui/material";
 import { ArrowForwardIos } from "@mui/icons-material";
-import { mockData } from "../../apis/mockdata";
+
 import Book from "../../components/Book/Book";
 import * as BookService from "../../../src/services/BookService";
 import { useLocation } from "react-router-dom";
@@ -9,23 +9,19 @@ import { useLocation } from "react-router-dom";
 function Findbook() {
   const location = useLocation();
 
-  const [books, setBooks] = useState(mockData?.books);
+  const [books, setBooks] = useState([]);
   const [product, setProducts] = useState([]);
   const bookResult = location.state?.bookResult;
 
   console.log("ket qua tim kiem", bookResult);
 
   const fetchAllBook = async () => {
-    // const res = await BookService.getAllBook();
-    // if (res?.status === "OK") {
-    //   setBooks(res?.data);
-    // }
     setBooks(bookResult);
   };
   useEffect(() => {
     fetchAllBook();
   }, []);
-  //console.log(product);
+
   return (
     <Box mt={2}>
       {books.length > 0 && (

@@ -13,8 +13,7 @@ import {
 import BookIcon from "@mui/icons-material/Book";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import reviewApi from "../../apis/reviewApi";
-import { mockData } from "../../apis/mockdata";
+
 import * as MusicService from "../../services/MusicService";
 import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -42,6 +41,20 @@ function MusicDetail() {
       // pauseAudio();
     }
   };
+  const stopReading = () => {
+    speechSynthesis.cancel();
+  };
+
+  useEffect(() => {
+    //CheckTimeAudio();
+    window.navigation.addEventListener("navigate", stopReading);
+    //window.addEventListener("navigate", handleBeforeOut);
+
+    return () => {
+      // Remove event listeners on cleanup
+      window.navigation.removeEventListener("navigate", stopReading);
+    };
+  }, []);
 
   let imageB = "src/assets/image_music.png";
 

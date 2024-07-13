@@ -2,23 +2,15 @@ import { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import { useNavigate } from "react-router-dom";
-import { mockData } from "../../apis/mockdata";
+
 import MenuCategories from "./MenuCategories";
 import MenuAuthors from "./MenuAuthors";
 
 function BoardBar() {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState(mockData?.categories);
-  const [authors, setAuthors] = useState(mockData?.authors);
-  // useEffect(() => {
-  //     categoryApi.getAllEnabledCategories()
-  //         .then(response => {
-  //             setCategories(response.data)
-  //         })
-  //         .catch(error => {
-  //             console.error(error)
-  //         })
-  // }, [])
+  const [categories, setCategories] = useState([]);
+  const [authors, setAuthors] = useState([]);
+
   return (
     <Box
       sx={{
