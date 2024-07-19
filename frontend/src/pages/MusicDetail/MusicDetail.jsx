@@ -90,6 +90,17 @@ function MusicDetail() {
       navigate("/play-music", {
         state: { musicInfo: music },
       });
+    } else if (
+      recognizedText.toLocaleLowerCase().includes("tìm kiếm bài hát")
+    ) {
+      console.log("in bug");
+    } else if (
+      recognizedText.toLocaleLowerCase().includes("xin lỗi" || "yêu cầu")
+    ) {
+      console.log("in bug1");
+    } else {
+      console.log("in void", recognizedText);
+      respond("Xin lỗi, bạn có thể lặp lại yêu cầu không ạ");
     }
   }, [recognizedText]);
 

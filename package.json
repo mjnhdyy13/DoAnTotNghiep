@@ -7,12 +7,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "frontend": "cd frontend  && npm start",
     "backend": "cd backend  && npm start",
-    "start": "concurrently \"npm run frontend\" \"npm run backend\""
+    "start": "concurrently \"npm run backend\" \"npm run frontend && open http://localhost:8000\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "open": "^10.1.0"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
   }
 }

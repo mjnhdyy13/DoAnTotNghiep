@@ -169,7 +169,6 @@ function ReadBook(props) {
     }
     if (event.key === "Enter") {
       //test
-      setHighlightIndex(0);
       startHighlight();
     }
   };
@@ -222,12 +221,13 @@ function ReadBook(props) {
     if (recognizedText.toLocaleLowerCase().includes("dừng")) {
       console.log("dung doc");
       stopHighlight();
-      speechSynthesis.pause();
+      //speechSynthesis.pause();
+      speechSynthesis.cancel();
     }
     if (recognizedText.toLocaleLowerCase().includes("tiếp tục")) {
       console.log("tiếp tục");
       startHighlight();
-      speechSynthesis.resume();
+      //speechSynthesis.resume();
     }
     if (recognizedText.toLocaleLowerCase().includes("tăng âm thanh")) {
       volumeR = 1;
@@ -260,7 +260,7 @@ function ReadBook(props) {
         respond("Không có chương sau");
       }
     }
-    if (recognizedText.toLocaleLowerCase().includes("chương trước")) {
+    if (recognizedText.toLocaleLowerCase().includes("trước đó")) {
       let number = getNumberFromString(chapterInfo.name);
       let previousChapter = bookInfo.chapter[number - 2];
       console.log("previousChapter", previousChapter);
@@ -277,6 +277,14 @@ function ReadBook(props) {
       } else {
         respond("Không có chương trước");
       }
+      // } else if (
+      //   recognizedText.toLocaleLowerCase().includes("xin lỗi" || "yêu cầu")
+      // ) {
+      //   console.log("in bug1");
+      // } else {
+      //   console.log("in void", recognizedText);
+      //   respond("Xin lỗi, bạn có thể lặp lại yêu cầu không ạ");
+      // }
     }
   }, [recognizedText]);
 

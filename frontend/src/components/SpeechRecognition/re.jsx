@@ -306,6 +306,22 @@ const SpeechRecognitionComponent = () => {
         navigate(`/`);
         respond("Đã về trang chủ");
       }
+      // if (
+      //   text
+      //     .toLowerCase()
+      //     .includes(
+      //       "chương" ||
+      //         "từ đầu" ||
+      //         "tiếp tục" ||
+      //         "dừng" ||
+      //         "phát" ||
+      //         "tăng" ||
+      //         "giảm"
+      //     )
+      // ) {
+      // } else {
+      //   respond("Mời bạn nói lại yêu cầu");
+      // }
 
       setP(document.createElement("p"));
     }

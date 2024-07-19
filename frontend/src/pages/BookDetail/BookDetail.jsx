@@ -105,6 +105,7 @@ function BookDetail() {
       const description_author = bookD?.author?.name;
       resVn(description_book);
       resEn(description_author);
+      respond("Mời bạn chọn chương muốn đọc");
       play = true;
       console.log("kiểm tra", play);
     }
@@ -136,6 +137,15 @@ function BookDetail() {
           respond("Không có kết quả phù hợp.");
         }
       }
+    } else if (recognizedText.toLocaleLowerCase().includes("tìm kiếm sách")) {
+      console.log("in bug");
+    } else if (
+      recognizedText.toLocaleLowerCase().includes("xin lỗi" || "yêu cầu")
+    ) {
+      console.log("in bug1");
+    } else {
+      console.log("in void", recognizedText);
+      respond("Xin lỗi, bạn có thể lặp lại yêu cầu không ạ");
     }
   }, [recognizedText]);
 
